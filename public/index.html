@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StockFlow - Inventory Management System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container-fluid px-lg-4">
+      <a class="navbar-brand brand-logo" href="#" onclick="navigate('dashboard'); return false;">
+        <div class="brand-icon">
+          <i class="bi bi-box-seam-fill"></i>
+        </div>
+        <span>StockFlow</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="topNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="nav-links" style="display: none;">
+          <li class="nav-item">
+            <a class="nav-link px-3 py-2 fw-medium" id="nav-dashboard" href="#" onclick="navigate('dashboard'); return false;">
+              <i class="bi bi-grid-1x2-fill me-1"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link px-3 py-2 fw-medium" id="nav-products" href="#" onclick="navigate('products'); return false;">
+              <i class="bi bi-boxes me-1"></i> Products
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link px-3 py-2 fw-medium" id="nav-settings" href="#" onclick="navigate('settings'); return false;">
+              <i class="bi bi-gear-fill me-1"></i> Settings
+            </a>
+          </li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-2" id="nav-auth-section"></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main View Container -->
+  <main class="container-fluid px-lg-4 py-4">
+
+    <!-- Auth View -->
+    <div id="view-auth" class="auth-wrapper" style="display: none;">
+      <div class="auth-card">
+        
+        <ul class="nav nav-pills nav-fill mb-4 p-1 bg-light rounded-3" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-medium py-2" id="tab-login" onclick="toggleAuthForm('login')">
+              Sign In
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link fw-medium py-2" id="tab-signup" onclick="toggleAuthForm('signup')">
+              Create Account
+            </button>
+          </li>
+        </ul>
+
+        <div id="auth-alert" class="alert alert-danger py-2 px-3 small mb-3" style="display: none;"></div>
+
+        <!-- Login -->
+        <form id="form-login" onsubmit="handleLogin(event)">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Email Address</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+              <input type="email" id="login-email" class="form-control" placeholder="name@company.com" required>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label small fw-semibold text-secondary">Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
+              <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm mb-3">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to StockFlow
+          </button>
+
+          <div class="text-center pt-2 border-top">
+            <span class="small text-muted d-block mb-2">Want to test with sample data?</span>
+            <button type="button" class="btn btn-outline-secondary btn-sm w-100 py-2" onclick="fillDemoAndLogin()">
+              <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Demo Account (Apex Retailers)
+            </button>
+          </div>
+        </form>
+
+        <!-- Signup -->
+        <form id="form-signup" onsubmit="handleSignup(event)" style="display: none;">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Organization Name</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted"><i class="bi bi-building"></i></span>
+              <input type="text" id="signup-org" class="form-control" placeholder="e.g. Acme Stores" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Work Email</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+              <input type="email" id="signup-email" class="form-control" placeholder="owner@company.com" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
+              <input type="password" id="signup-password" class="form-control" placeholder="At least 6 characters" minlength="6" required>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label small fw-semibold text-secondary">Confirm Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted"><i class="bi bi-shield-check"></i></span>
+              <input type="password" id="signup-confirm-password" class="form-control" placeholder="Repeat password" minlength="6" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success w-100 py-2 fw-semibold shadow-sm">
+            <i class="bi bi-person-plus-fill me-1"></i> Create Account
+          </button>
+        </form>
+
+      </div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="view-dashboard" style="display: none;">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+          <h2 class="h4 fw-bold mb-1 text-slate-900" id="dash-greeting">Inventory Dashboard</h2>
+          <p class="text-muted small mb-0">Overview of current stock levels, inventory valuation, and replenishment alerts.</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-secondary btn-sm" onclick="loadDashboard()">
+            <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+          </button>
+          <button class="btn btn-primary btn-sm fw-semibold shadow-sm" onclick="openAddProductModal()">
+            <i class="bi bi-plus-lg me-1"></i> Add Product
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="metric-label">Total Products</span>
+              <div class="metric-icon-box bg-primary-subtle text-primary">
+                <i class="bi bi-boxes"></i>
+              </div>
+            </div>
+            <div class="metric-value" id="kpi-total-products">0</div>
+            <div class="small text-muted mt-1">Catalog items</div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="metric-label">Total Units on Hand</span>
+              <div class="metric-icon-box bg-success-subtle text-success">
+                <i class="bi bi-stack"></i>
+              </div>
+            </div>
+            <div class="metric-value" id="kpi-total-units">0</div>
+            <div class="small text-muted mt-1">Aggregated stock count</div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="metric-card border-warning-subtle">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="metric-label text-warning-emphasis">Low Stock Alerts</span>
+              <div class="metric-icon-box bg-warning-subtle text-warning-emphasis">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+              </div>
+            </div>
+            <div class="metric-value text-warning-emphasis" id="kpi-low-stock">0</div>
+            <div class="small text-muted mt-1" id="kpi-low-stock-subtext">Items needing restock</div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="metric-label">Inventory Valuation</span>
+              <div class="metric-icon-box bg-info-subtle text-info-emphasis">
+                <i class="bi bi-currency-rupee"></i>
+              </div>
+            </div>
+            <div class="metric-value" id="kpi-retail-value">₹0.00</div>
+            <div class="small text-muted mt-1" id="kpi-cost-subtext">Cost valuation: ₹0.00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Low Stock Section -->
+      <div class="content-card mb-4">
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+              <i class="bi bi-bell-fill me-1"></i> Alert
+            </span>
+            <h5 class="h6 mb-0 fw-bold">Low Stock Items</h5>
+          </div>
+          <span class="small text-muted" id="low-stock-count-badge">0 items</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Quantity</th>
+                <th>Threshold</th>
+                <th>Status</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody id="low-stock-table-body"></tbody>
+          </table>
+        </div>
+        <div id="low-stock-empty" class="text-center py-5" style="display: none;">
+          <div class="text-success fs-1 mb-2"><i class="bi bi-check-circle-fill"></i></div>
+          <h6 class="fw-semibold text-secondary">Stock levels are healthy</h6>
+          <p class="text-muted small mb-0">No items are currently below their reorder threshold.</p>
+        </div>
+      </div>
+
+      <!-- Recent Stock Activity -->
+      <div class="content-card">
+        <div class="p-3 border-bottom bg-white d-flex justify-content-between align-items-center">
+          <h5 class="h6 mb-0 fw-bold"><i class="bi bi-clock-history me-1 text-primary"></i> Recent Stock Adjustments</h5>
+          <span class="small text-muted">Latest activity</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Product</th>
+                <th>Change</th>
+                <th>Stock Level</th>
+                <th>Note</th>
+                <th>User</th>
+              </tr>
+            </thead>
+            <tbody id="recent-activity-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Products View -->
+    <div id="view-products" style="display: none;">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+          <h2 class="h4 fw-bold mb-1 text-slate-900">Products & Inventory</h2>
+          <p class="text-muted small mb-0">Manage catalog products, pricing, and stock levels.</p>
+        </div>
+        <button class="btn btn-primary fw-semibold shadow-sm" onclick="openAddProductModal()">
+          <i class="bi bi-plus-lg me-1"></i> Add Product
+        </button>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="content-card p-3 mb-3 bg-white">
+        <div class="row g-3 align-items-center">
+          <div class="col-12 col-md-5">
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted"><i class="bi bi-search"></i></span>
+              <input type="text" id="product-search-input" class="form-control" placeholder="Search by name or SKU..." oninput="handleProductSearch()">
+            </div>
+          </div>
+          <div class="col-12 col-md-7 d-flex flex-wrap justify-content-md-end gap-2">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-sm btn-outline-secondary active" id="filter-all" onclick="setProductFilter('all')">All</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="filter-low_stock" onclick="setProductFilter('low_stock')">
+                <i class="bi bi-exclamation-circle text-warning me-1"></i> Low Stock
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="filter-out_of_stock" onclick="setProductFilter('out_of_stock')">
+                <i class="bi bi-x-circle text-danger me-1"></i> Out of Stock
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="filter-in_stock" onclick="setProductFilter('in_stock')">
+                <i class="bi bi-check-circle text-success me-1"></i> In Stock
+              </button>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary" onclick="loadProducts()" title="Refresh">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Table -->
+      <div class="content-card">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Quantity</th>
+                <th>Status</th>
+                <th>Selling Price</th>
+                <th>Cost Price</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="products-table-body"></tbody>
+          </table>
+        </div>
+
+        <div id="products-empty" class="text-center py-5" style="display: none;">
+          <div class="text-muted fs-1 mb-2"><i class="bi bi-box-seam"></i></div>
+          <h6 class="fw-semibold text-secondary">No products found</h6>
+          <p class="text-muted small mb-3">Add a new product or adjust your filters.</p>
+          <button class="btn btn-primary btn-sm" onclick="openAddProductModal()">
+            <i class="bi bi-plus-lg me-1"></i> Add Product
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Settings View -->
+    <div id="view-settings" style="display: none;">
+      <div class="mb-4">
+        <h2 class="h4 fw-bold mb-1 text-slate-900">Settings</h2>
+        <p class="text-muted small mb-0">Manage organization settings and inventory alert thresholds.</p>
+      </div>
+
+      <div class="row">
+        <div class="col-12 col-lg-7">
+          <div class="content-card p-4 bg-white mb-4">
+            <h5 class="h6 fw-bold mb-3 border-bottom pb-2">Organization & Thresholds</h5>
+
+            <form id="form-settings" onsubmit="handleSaveSettings(event)">
+              <div class="mb-3">
+                <label class="form-label small fw-semibold text-secondary">Organization Name</label>
+                <input type="text" id="settings-org-name" class="form-control" required>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label small fw-semibold text-secondary">Default Low Stock Threshold</label>
+                <div class="input-group" style="max-width: 200px;">
+                  <input type="number" id="settings-threshold" class="form-control" min="0" step="1" required>
+                  <span class="input-group-text">units</span>
+                </div>
+                <div class="form-text small text-muted mt-2">
+                  Used as fallback when a product has no custom threshold assigned.
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-3">
+                <button type="submit" class="btn btn-primary fw-semibold px-4">
+                  Save Changes
+                </button>
+                <span id="settings-status" class="small text-success fw-medium" style="display: none;">
+                  <i class="bi bi-check-circle-fill me-1"></i> Saved!
+                </span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modals -->
+
+  <!-- Add Product Modal -->
+  <div class="modal fade" id="modal-add-product" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title h6 fw-bold">New Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="form-add-product" onsubmit="handleCreateProduct(event)">
+          <div class="modal-body">
+            <div id="add-product-alert" class="alert alert-danger py-2 px-3 small" style="display: none;"></div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-secondary">Product Name <span class="text-danger">*</span></label>
+              <input type="text" id="add-name" class="form-control" placeholder="e.g. Wireless Mouse" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-secondary">SKU <span class="text-danger">*</span></label>
+              <input type="text" id="add-sku" class="form-control text-uppercase" placeholder="e.g. MOU-WL-01" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-secondary">Description</label>
+              <textarea id="add-desc" class="form-control" rows="2" placeholder="Product details..."></textarea>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-semibold text-secondary">Quantity on Hand</label>
+                <input type="number" id="add-qty" class="form-control" min="0" step="1" value="0">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-semibold text-secondary">Low Stock Threshold</label>
+                <input type="number" id="add-threshold" class="form-control" min="0" step="1" placeholder="Default (5)">
+              </div>
+            </div>
+
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="form-label small fw-semibold text-secondary">Cost Price (₹)</label>
+                <input type="number" id="add-cost" class="form-control" min="0" step="0.01" placeholder="0.00">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-semibold text-secondary">Selling Price (₹)</label>
+                <input type="number" id="add-price" class="form-control" min="0" step="0.01" placeholder="0.00">
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm fw-semibold">Save Product</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div class="modal fade" id="modal-edit-product" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title h6 fw-bold">Edit Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="form-edit-product" onsubmit="handleUpdateProduct(event)">
+          <input type="hidden" id="edit-id">
+          <div class="modal-body">
+            <div id="edit-product-alert" class="alert alert-danger py-2 px-3 small" style="display: none;"></div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-secondary">Product Name <span class="text-danger">*</span></label>
+              <input type="text" id="edit-name" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-secondary">SKU <span class="text-danger">*</span></label>
+              <input type="text" id="edit-sku" class="form-control text-uppercase" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-secondary">Description</label>
+              <textarea id="edit-desc" class="form-control" rows="2"></textarea>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-semibold text-secondary">Quantity on Hand</label>
+                <input type="number" id="edit-qty" class="form-control" min="0" step="1" required>
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-semibold text-secondary">Low Stock Threshold</label>
+                <input type="number" id="edit-threshold" class="form-control" min="0" step="1" placeholder="Uses default">
+              </div>
+            </div>
+
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="form-label small fw-semibold text-secondary">Cost Price (₹)</label>
+                <input type="number" id="edit-cost" class="form-control" min="0" step="0.01">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-semibold text-secondary">Selling Price (₹)</label>
+                <input type="number" id="edit-price" class="form-control" min="0" step="0.01">
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm fw-semibold">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Adjust Stock Modal -->
+  <div class="modal fade" id="modal-adjust-stock" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title h6 fw-bold"><i class="bi bi-arrow-left-right me-1 text-warning"></i> Adjust Stock</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="form-adjust-stock" onsubmit="handleAdjustStockSubmit(event)">
+          <input type="hidden" id="adj-product-id">
+          <input type="hidden" id="adj-current-qty">
+          <div class="modal-body">
+            <div id="adjust-alert" class="alert alert-danger py-2 px-3 small" style="display: none;"></div>
+
+            <div class="p-3 bg-light rounded-3 mb-3">
+              <div class="fw-bold text-dark" id="adj-product-name">-</div>
+              <div class="small text-muted">SKU: <span id="adj-product-sku" class="sku-badge">-</span></div>
+              <div class="mt-2 text-secondary small">
+                Current Stock: <strong class="fs-6 text-dark" id="adj-display-current-qty">0</strong> units
+              </div>
+            </div>
+
+            <label class="form-label small fw-semibold text-secondary">Quick Shortcuts</label>
+            <div class="d-flex flex-wrap gap-1 mb-3">
+              <button type="button" class="btn btn-sm btn-outline-success quick-adj-btn" onclick="setAdjustment(1)">+1</button>
+              <button type="button" class="btn btn-sm btn-outline-success quick-adj-btn" onclick="setAdjustment(5)">+5</button>
+              <button type="button" class="btn btn-sm btn-outline-success quick-adj-btn" onclick="setAdjustment(10)">+10</button>
+              <button type="button" class="btn btn-sm btn-outline-danger quick-adj-btn" onclick="setAdjustment(-1)">-1</button>
+              <button type="button" class="btn btn-sm btn-outline-danger quick-adj-btn" onclick="setAdjustment(-5)">-5</button>
+              <button type="button" class="btn btn-sm btn-outline-danger quick-adj-btn" onclick="setAdjustment(-10)">-10</button>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-secondary">Adjustment Units (+ or -) <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <input type="number" id="adj-units" class="form-control" placeholder="e.g. +10 or -3" step="1" required oninput="previewAdjustedStock()">
+                <span class="input-group-text">units</span>
+              </div>
+              <div class="form-text small" id="adj-preview-text">Resulting Stock: -</div>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label small fw-semibold text-secondary">Reason / Note</label>
+              <input type="text" id="adj-note" class="form-control" placeholder="e.g. Purchase order arrived, damaged units removed">
+            </div>
+
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-warning btn-sm fw-semibold">Apply</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Product Modal -->
+  <div class="modal fade" id="modal-delete-product" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title h6 fw-bold text-danger">Delete Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body py-3">
+          <p class="mb-2">Are you sure you want to delete this product?</p>
+          <div class="p-3 bg-light rounded-2 border">
+            <div class="fw-bold" id="delete-product-name">-</div>
+            <div class="small text-muted">SKU: <span id="delete-product-sku">-</span></div>
+          </div>
+          <div class="form-text text-danger small mt-2">
+            This action cannot be undone.
+          </div>
+        </div>
+        <div class="modal-footer bg-light border-0">
+          <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger btn-sm fw-semibold" id="confirm-delete-btn" onclick="executeDeleteProduct()">
+            Delete Product
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

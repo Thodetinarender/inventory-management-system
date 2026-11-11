@@ -1,21 +1,27 @@
 {
-  "name": "wexaaiassissment",
+  "name": "stockflow",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "StockFlow - Multi-Tenant SaaS Inventory Management System",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node src/seed.js",
+    "test": "node --test tests/api.test.js"
   },
-  "keywords": [],
+  "keywords": [
+    "inventory",
+    "saas",
+    "multi-tenant",
+    "stock-management"
+  ],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^18.0.10",
     "express": "^5.3.0",
-    "isomorphic-git": "^1.44.12",
     "jsonwebtoken": "^9.0.3"
   }
 }
